@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+ 	   http://www.springframework.org/schema/security 
+ 	   http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<security:http pattern="/resources/**" security="none" />
+	<security:http pattern="/**/login.html" security="none" />
+
+	<security:http auto-config="false" entry-point-ref="pumaLoginUrlEntryPoint" >
+		<security:anonymous enabled='false'/>
+		<security:access-denied-handler ref="pumaAccessDeniedHandler" />
+		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="pumaFilter"/>
+		<security:custom-filter position="FORM_LOGIN_FILTER" ref="pumaLoginFilter" />
+		<security:custom-filter position="LOGOUT_FILTER" ref="pumaLogoutFilter"/>
+		
+		 <!-- <security:custom-filter position="CONCURRENT_SESSION_FILTER" ref="pumaConcurrencyFilter" />
+        <security:custom-filter position="SESSION_MANAGEMENT_FILTER" ref="filterPumaSession" />  -->
+        
+		<security:remember-me key="PUMA_REMEMBER_ME_KEY" services-ref="rememberMeServices" />
+		
+		<security:session-management>
+             <security:concurrency-control expired-url="/login.html?status=123" session-registry-ref="sessionRegistry" max-sessions="1"/>
+        </security:session-management>
+        <!-- <security:session-management session-fixation-protection="none" /> -->
+	</security:http>
+
+	<!-- custom session management and concurrent session management-->
+	 <!-- <bean id="filterPumaSession" class="org.springframework.security.web.session.SessionManagementFilter">
+	    <constructor-arg ref="securityContextRepository" />
+	</bean>
+	<bean id="securityContextRepository" class="org.springframework.security.web.context.HttpSessionSecurityContextRepository">
+		<property name="allowSessionCreation" value="false" />
+	</bean>  -->
+    <!-- <bean id="pumaConcurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter">
+    	<property name="sessionRegistry" ref="sessionRegistry" />
+    	<property name="expiredUrl" value="/login.html?status=800" />
+    </bean> -->
+	<bean id="sas" class="org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy">
+	    <constructor-arg name="sessionRegistry" ref="sessionRegistry" />
+	</bean>
+  	<bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
+  	
+  	
+  		
+	<security:authentication-manager alias="pumaAuthenticationManager">
+		<security:authentication-provider user-service-ref="security.memberdetailsservice">
+			<security:password-encoder hash="sha">
+				<security:salt-source user-property="id" />
+			</security:password-encoder>
+		</security:authentication-provider>
+	</security:authentication-manager>
+	
+	<bean id="pumaFilter" class="com.puma.core.security.PumaFilterSecurityInterceptor">
+		<property name="authenticationManager" ref="pumaAuthenticationManager" />
+		<property name="accessDecisionManager" ref="pumaAccessDecisionManagerBean" />
+		<property name="securityMetadataSource" ref="pumaSecurityMetadataSource" />
+	</bean>
+	<!-- 访问决策器，决定某个用户具有的角色，是否有足够的权限去访问某个资源 -->
+	<bean id="pumaAccessDecisionManagerBean" class="com.puma.core.security.PumaAccessDecisionManager" />
+	<!-- 资源源数据定义，将所有的资源和权限对应关系建立起来，即定义某一资源可以被哪些角色访问 -->
+	<bean id="pumaSecurityMetadataSource" class="com.puma.core.security.PumaInvocationSecurityMetadataSourceService" init-method="start" destroy-method="end" />
+
+	<bean id="pumaAccessDeniedHandler" class="com.puma.core.security.PumaAccessDeniedHandler">
+		<property name="accessDeniedUrl" value="/login.html?status=403" />
+	</bean>
+
+	<bean id="pumaLoginUrlEntryPoint" class="com.puma.core.security.PumaLoginUrlEntryPoint">
+		<property name="loginFormUrl" value="/login.html" />
+	</bean>
+	
+	<bean id="pumaLoginFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		<property name="rememberMeServices" ref="rememberMeServices"/>
+		<property name="sessionAuthenticationStrategy" ref="sas" />
+        <property name="authenticationManager" ref="pumaAuthenticationManager"/>
+        <property name="authenticationFailureHandler" ref="pumaLoginFailureHandler"/>
+        <property name="authenticationSuccessHandler" ref="pumaLoginSuccessHandler"/>
+        <property name="filterProcessesUrl" value="/login"/> 
+        <property name="usernameParameter" value="username"/> 
+        <property name="passwordParameter" value="password"/> 
+     </bean>
+    <bean id="pumaLoginFailureHandler" class="com.puma.core.security.PumaLoginFailureHandler"/>
+    <bean id="pumaLoginSuccessHandler" class="com.puma.core.security.PumaLoginSuccessHandler">
+    	<property name="defaultTargetUrl" value="/main.html"/> 
+    	<property name="useReferer" value="true"/>
+    </bean>
+        
+	<bean id="securityContextLogoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
+	<bean id="pumaLogoutSuccessHandler" class="com.puma.core.security.PumaLogoutSuccessHandler">
+		<property name="useReferer" value="true"/>
+	 </bean>
+	<bean id="pumaLogoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+	    <property name="filterProcessesUrl" value="/logout"/>
+	    <!--<property name="logoutSuccessHandler" ref="pumaLogoutSuccessHandler"/>
+	     <constructor-arg index="0" value="/"/> -->
+	    <constructor-arg index="0" ref="pumaLogoutSuccessHandler"/> 
+	    <constructor-arg index="1">
+	        <list>
+	        	<!-- <ref bean="rememberMeServices" /> -->
+	            <ref bean="securityContextLogoutHandler"/>
+	            <ref bean="rememberMeServices"/>
+	            <!--ref bean="myLogoutHandler"/-->
+	        </list>
+	    </constructor-arg>
+	</bean>
+	
+	 <!-- <bean id="rememberMeServices"
+	  class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
+	  <constructor-arg value="PUMA_REMEMBER_ME_KEY"/>
+      <constructor-arg ref="security.memberdetailsservice"/>
+	  <property name="cookieName" value="PUMA_REMEMBER_ME_COOKIE" />
+	  <property name="alwaysRemember" value="false"/>
+	  <property name="tokenValiditySeconds" value="300"/>
+	  <property name="parameter" value="rememberme"/>
+	 </bean> -->
+	<bean id="rememberMeServices"
+	  class="org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices">
+	  <constructor-arg value="PUMA_REMEMBER_ME_KEY"/>
+      <constructor-arg ref="security.memberdetailsservice"/>
+      <constructor-arg ref="jdbcTokenRepositoryImpl"/>
+	  <property name="cookieName" value="PUMA_REMEMBER_ME_COOKIE" />
+	  <property name="alwaysRemember" value="false"/>
+	  <property name="tokenValiditySeconds" value="30"/>
+	  <property name="parameter" value="rememberme"/>
+	 </bean>
+	 <bean id="jdbcTokenRepositoryImpl" class="org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl">
+	 	<property name="dataSource" ref="dataSource"/>
+	 </bean>
+</beans>
