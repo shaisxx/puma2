@@ -16,34 +16,17 @@
 		<security:custom-filter position="FORM_LOGIN_FILTER" ref="pumaLoginFilter" />
 		<security:custom-filter position="LOGOUT_FILTER" ref="pumaLogoutFilter"/>
 		
-		 <!-- <security:custom-filter position="CONCURRENT_SESSION_FILTER" ref="pumaConcurrencyFilter" />
-        <security:custom-filter position="SESSION_MANAGEMENT_FILTER" ref="filterPumaSession" />  -->
-        
 		<security:remember-me key="PUMA_REMEMBER_ME_KEY" services-ref="rememberMeServices" />
 		
 		<security:session-management>
              <security:concurrency-control expired-url="/login.html?status=123" session-registry-ref="sessionRegistry" max-sessions="1"/>
         </security:session-management>
-        <!-- <security:session-management session-fixation-protection="none" /> -->
 	</security:http>
 
-	<!-- custom session management and concurrent session management-->
-	 <!-- <bean id="filterPumaSession" class="org.springframework.security.web.session.SessionManagementFilter">
-	    <constructor-arg ref="securityContextRepository" />
-	</bean>
-	<bean id="securityContextRepository" class="org.springframework.security.web.context.HttpSessionSecurityContextRepository">
-		<property name="allowSessionCreation" value="false" />
-	</bean>  -->
-    <!-- <bean id="pumaConcurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter">
-    	<property name="sessionRegistry" ref="sessionRegistry" />
-    	<property name="expiredUrl" value="/login.html?status=800" />
-    </bean> -->
 	<bean id="sas" class="org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy">
 	    <constructor-arg name="sessionRegistry" ref="sessionRegistry" />
 	</bean>
   	<bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
-  	
-  	
   		
 	<security:authentication-manager alias="pumaAuthenticationManager">
 		<security:authentication-provider user-service-ref="security.memberdetailsservice">
@@ -93,15 +76,11 @@
 	 </bean>
 	<bean id="pumaLogoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
 	    <property name="filterProcessesUrl" value="/logout"/>
-	    <!--<property name="logoutSuccessHandler" ref="pumaLogoutSuccessHandler"/>
-	     <constructor-arg index="0" value="/"/> -->
 	    <constructor-arg index="0" ref="pumaLogoutSuccessHandler"/> 
 	    <constructor-arg index="1">
 	        <list>
-	        	<!-- <ref bean="rememberMeServices" /> -->
 	            <ref bean="securityContextLogoutHandler"/>
 	            <ref bean="rememberMeServices"/>
-	            <!--ref bean="myLogoutHandler"/-->
 	        </list>
 	    </constructor-arg>
 	</bean>
@@ -126,6 +105,7 @@
 	  <property name="parameter" value="rememberme"/>
 	 </bean>
 	 <bean id="jdbcTokenRepositoryImpl" class="org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl">
+	 	<property name="createTableOnStartup" value="true"/>
 	 	<property name="dataSource" ref="dataSource"/>
 	 </bean>
 </beans>
