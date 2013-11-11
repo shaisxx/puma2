@@ -10,35 +10,46 @@ import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
+import com.puma.core.security.AjaxLoginResult.AjaxLoginStatus;
 import com.puma.util.WebUtils;
 
 public class PumaLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 	 
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
     public PumaLoginSuccessHandler() {
     }
  
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
     	if(WebUtils.isAjaxRequest(request)){
-    		System.out.println("ajax login success");
+    		
+    		if(logger.isDebugEnabled()){
+    			logger.debug("ajax login success");
+    		}
+    		
+    		ObjectMapper objectMapper = new ObjectMapper();
+            response.setHeader("Content-Type", "application/json;charset=UTF-8");
+            JsonGenerator jsonGenerator = objectMapper.getJsonFactory().createJsonGenerator(response.getOutputStream(),
+                    JsonEncoding.UTF8);
+            try {
+                AjaxLoginResult alr = new AjaxLoginResult(AjaxLoginStatus.SUCCESS);
+                objectMapper.writeValue(jsonGenerator, alr);
+            } catch (JsonProcessingException ex) {
+                throw new HttpMessageNotWritableException("Could not write JSON: " + ex.getMessage(), ex);
+            }
+            
        	  return;
    	   }
     	super.onAuthenticationSuccess(request, response, authentication);
-        /*ObjectMapper objectMapper = new ObjectMapper();
-        response.setHeader("Content-Type", "application/json;charset=UTF-8");
-        JsonGenerator jsonGenerator = objectMapper.getJsonFactory().createJsonGenerator(response.getOutputStream(),
-                JsonEncoding.UTF8);
-        try {
-            LoginResult lr = new LoginResult(true);
-            objectMapper.writeValue(jsonGenerator, lr);
-        } catch (JsonProcessingException ex) {
-            throw new HttpMessageNotWritableException("Could not write JSON: " + ex.getMessage(), ex);
-        }*/
+    	if(logger.isDebugEnabled()){
+			logger.debug("normal login success");
+		}
     }
 }

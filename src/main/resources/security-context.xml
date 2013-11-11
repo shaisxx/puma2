@@ -64,9 +64,10 @@
         <property name="usernameParameter" value="username"/> 
         <property name="passwordParameter" value="password"/> 
      </bean>
-    <bean id="pumaLoginFailureHandler" class="com.puma.core.security.PumaLoginFailureHandler"/>
+    <bean id="pumaLoginFailureHandler" class="com.puma.core.security.PumaLoginFailureHandler">
+    	<property name="defaultFailureUrl" value="/loginfailed.html"/>
+    </bean>
     <bean id="pumaLoginSuccessHandler" class="com.puma.core.security.PumaLoginSuccessHandler">
-    	<property name="defaultTargetUrl" value="/main.html"/> 
     	<property name="useReferer" value="true"/>
     </bean>
         
