@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +26,7 @@ import com.puma.core.domain.Member;
 import com.puma.core.domain.Resource;
 import com.puma.core.domain.Role;
 
+@SuppressWarnings("deprecation")
 @Service("security.memberdetailsservice")
 @Singleton
 public class MemberDetailsService implements UserDetailsService {

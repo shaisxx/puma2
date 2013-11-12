@@ -3,15 +3,20 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:security="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd	
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd 
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 	<!-- Scans within the base package of the application for @Components to configure as beans -->
 	<context:component-scan base-package="com.**" />
-	<!-- <context:component-scan base-package="com" use-default-filters="false">
-		<context:include-filter type="regex" expression="com.puma.*.controller.*" />
-	</context:component-scan> -->
-
+	
+    <bean id="globalMvcExceptionResolver" class="com.puma.exception.GlobalMvcExceptionHandler"/> 
+	
+	<bean id="controllerAspect" class="com.puma.core.aspect.LogAspect"/>
+	<aop:aspectj-autoproxy proxy-target-class="true">
+        <aop:include name="controllerAspect" />
+    </aop:aspectj-autoproxy> 
 </beans>

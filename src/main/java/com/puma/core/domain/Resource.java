@@ -132,8 +132,7 @@ public class Resource extends BaseEntity implements GrantedAuthority{
 
 	@Override
 	public String getAuthority() {
-		//return name;
-		return resourceString;
+		return type+"----"+resourceString;
 	}
 
 }

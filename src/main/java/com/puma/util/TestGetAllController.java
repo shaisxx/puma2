@@ -23,6 +23,7 @@ public class TestGetAllController{
 	
 	
 	public void start() throws ClassNotFoundException{
+		
 		/*Set<RequestMappingInfo> rmSet = handlerMapping.getHandlerMethods().keySet();
 		for (RequestMappingInfo rm : rmSet) {
 			System.out.println(rm.getPatternsCondition().toString());

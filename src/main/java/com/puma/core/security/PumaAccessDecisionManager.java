@@ -10,8 +10,10 @@ import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.web.FilterInvocation;
 
 import com.puma.core.domain.Member;
+import com.puma.util.StringUtils;
 
 /**
  *AccessdecisionManager在Spring security中是很重要的。
@@ -52,12 +54,22 @@ public class PumaAccessDecisionManager implements AccessDecisionManager {
 		Member m = SecurityUtils.getAuthedMember();
 		if(null != m){
 			if(m.isSys()){
-				return;
+				String url = ((FilterInvocation) object).getRequestUrl();
+				if(resourceHasThisUrl(url)){
+					return;
+				}
 			}
 		}
 		
 		if( configAttributes == null ) {
 			return ;
+		}else{
+			for(ConfigAttribute ca:configAttributes){
+				String unauth = ca.getAttribute();
+				if(unauth.equalsIgnoreCase("UN_AUTHORIZED")){
+					throw new AccessDeniedException("");
+				}
+			}
 		}
 		
 		Iterator<ConfigAttribute> ite = configAttributes.iterator();
@@ -92,6 +104,21 @@ public class PumaAccessDecisionManager implements AccessDecisionManager {
 	public boolean supports(Class<?> clazz){
 		return true;
 
+	}
+	
+	private boolean resourceHasThisUrl(String url){
+		Iterator<String> ite = PumaInvocationSecurityMetadataSourceService.resourceMap.keySet().iterator();
+
+		while (ite.hasNext()) {
+			//s = "GET----/man/*/book";
+			String[] s = ite.next().split("----");
+			String resURL = s[1];
+			//if (urlMatcher.pathMatchesUrl(url, resURL)) {
+			if (StringUtils.match(url, resURL) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 

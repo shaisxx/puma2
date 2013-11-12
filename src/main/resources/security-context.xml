@@ -6,6 +6,7 @@
  	   http://www.springframework.org/schema/security 
  	   http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
+	<!-- <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" proxy-target-class = "true"/> -->
 	<security:http pattern="/resources/**" security="none" />
 	<security:http pattern="/**/login.html" security="none" />
 
@@ -44,7 +45,7 @@
 	<!-- 访问决策器，决定某个用户具有的角色，是否有足够的权限去访问某个资源 -->
 	<bean id="pumaAccessDecisionManagerBean" class="com.puma.core.security.PumaAccessDecisionManager" />
 	<!-- 资源源数据定义，将所有的资源和权限对应关系建立起来，即定义某一资源可以被哪些角色访问 -->
-	<bean id="pumaSecurityMetadataSource" class="com.puma.core.security.PumaInvocationSecurityMetadataSourceService" init-method="start" destroy-method="end" />
+	<bean id="pumaSecurityMetadataSource" class="com.puma.core.security.PumaInvocationSecurityMetadataSourceService"/>
 
 	<bean id="pumaAccessDeniedHandler" class="com.puma.core.security.PumaAccessDeniedHandler">
 		<property name="accessDeniedUrl" value="/login.html?status=403" />
@@ -106,7 +107,7 @@
 	  <property name="parameter" value="rememberme"/>
 	 </bean>
 	 <bean id="jdbcTokenRepositoryImpl" class="org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl">
-	 	<property name="createTableOnStartup" value="true"/>
+	 	<!-- <property name="createTableOnStartup" value="true"/> -->
 	 	<property name="dataSource" ref="dataSource"/>
 	 </bean>
 </beans>

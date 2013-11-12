@@ -3,9 +3,14 @@ package com.puma.util;
 import java.text.DecimalFormat;
 import java.util.UUID;
 
+import com.puma.core.security.util.AntUrlPathMatcher;
+import com.puma.core.security.util.UrlMatcher;
+
 public class StringUtils
 {
 
+	public static UrlMatcher urlMatcher = new AntUrlPathMatcher();
+	
     private StringUtils()
     {
     }
@@ -51,5 +56,18 @@ public class StringUtils
     public static String generateUUID()
     {
         return UUID.randomUUID().toString().replaceAll("-", "");
+    }
+    
+    /**
+     * 替换controller中url的参数为*,如/book/{id}/chapter/1会变成/book/x/chapter
+     * */
+    public static String convertToPatternString(String controllerUrl){
+		return controllerUrl.replaceAll("\\{[^}]*\\}","*");
+    }
+    
+    public static boolean match(String requestUrl, String patternString){
+//		String urlPattern = "/main/*/test?a=12";
+//		String url = "/main/dsa/test?a=123";
+		return urlMatcher.pathMatchesUrl(patternString, requestUrl);
     }
 }

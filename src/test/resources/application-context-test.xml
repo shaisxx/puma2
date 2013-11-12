@@ -73,6 +73,9 @@
 	</bean>
 	
 	<import resource="security-context.xml"/>
+	<!-- <import resource="servlet-context/servlet-context.xml"/> -->
+	
+	
 	
 	<!-- freeMarker config file path  -->
 	<bean id="freemarkerConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
