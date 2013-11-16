@@ -1,0 +1,105 @@
+<<<<<<< HEAD
+<html>
+ <head >
+ <title>Ajax test call</title>
+     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+     <script type="text/javascript" src="resources/js/jquery.min.js" ></script>
+     <!-- <script type="text/javascript" src="resources/js/jquery.class.min.js" ></script>
+     <script type="text/javascript" src="resources/js/md5-min.js" ></script>
+     <script type="text/javascript" src="resources/js/digest-auth.js" ></script> -->
+ 
+     <script type="text/javascript">
+     
+     function login(){
+     	var obj = new Object();
+         obj.username = $("#user").val();
+         obj.password = $("#password").val();
+         obj._spring_security_remember_me = $("#rememberme").val();
+     	 $.ajax({
+	         url: "/puma2/login",
+	         type: "post",
+	         data: obj,
+	         success: function(response) {
+	         	console.log(response);
+	         },
+	         error: function(response) { 
+	         	console.log(response);
+	         }             
+	     });
+     }
+     </script>
+ </head>
+ <body>
+   <div>
+     <h3>Test example of Digest Authentication using Ajax request and Spring Security</h3>  
+   </div>
+   <div>
+     <form action="/puma2/login" method="post">
+       <p>User <input id="user" type="text" name="username"></p>
+       <p>Password <input id="password" type="text" name="password"></p>
+       <p>Remember <input id="rememberme" type="checkbox" name="rememberme" value="true" checked="checked"></p>
+       <p> <button onclick="javascript:login();" >Ajax</button> </p>
+       <p> <input type="submit" value="submit"> </p>
+     </form>
+   </div>
+   <div id="response">
+   </div>
+   <a href="/puma2/logout">退出系统</a>
+   <div style="color: gray; font-size: 12px;">
+     Copyright 2012: <a href="http://arrowgroup.eu">ArrowGroup</a>, Author: <a href="http://marcin-michalski.pl">Marcin Michalski</a> 
+   </div>
+ </body>
+</html>
+=======
+<html>
+ <head >
+ <title>Ajax test call</title>
+     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+     <script type="text/javascript" src="resources/js/jquery.min.js" ></script>
+     <!-- <script type="text/javascript" src="resources/js/jquery.class.min.js" ></script>
+     <script type="text/javascript" src="resources/js/md5-min.js" ></script>
+     <script type="text/javascript" src="resources/js/digest-auth.js" ></script> -->
+ 
+     <script type="text/javascript">
+     
+     function login(){
+     	var obj = new Object();
+         obj.username = $("#user").val();
+         obj.password = $("#password").val();
+         obj._spring_security_remember_me = $("#rememberme").val();
+     	 $.ajax({
+	         url: "/puma2/login",
+	         type: "post",
+	         data: obj,
+	         success: function(response) {
+	         	console.log(response);
+	         },
+	         error: function(response) { 
+	         	console.log(response);
+	         }             
+	     });
+     }
+     </script>
+ </head>
+ <body>
+   <div>
+     <h3>Test example of Digest Authentication using Ajax request and Spring Security</h3>  
+   </div>
+   <div>
+     <form action="/puma2/login" method="post">
+       <p>User <input id="user" type="text" name="username"></p>
+       <p>Password <input id="password" type="text" name="password"></p>
+       <p>Remember <input id="rememberme" type="checkbox" name="rememberme" value="true" checked="checked"></p>
+       <p> <button onclick="login(); return false;" >Ajax</button> </p>
+       <p> <input type="submit" value="submit"> </p>
+     </form>
+   </div>
+   <div id="response">
+   </div>
+   <a href="/puma2/logout">退出系统</a>
+   <div style="color: gray; font-size: 12px;">
+     Copyright 2012: <a href="http://arrowgroup.eu">ArrowGroup</a>, Author: <a href="http://marcin-michalski.pl">Marcin Michalski</a> 
+   </div>
+ </body>
+</html>
+>>>>>>> e43ff2f25e94c9ddf58f4a244314edb59eab8b86
