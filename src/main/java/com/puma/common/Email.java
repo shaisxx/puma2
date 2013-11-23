@@ -37,7 +37,6 @@ public class Email implements Serializable {
 		return addressee.split(";");
 	}
 
-	
 	public String getSender() {
 		return sender;
 	}
